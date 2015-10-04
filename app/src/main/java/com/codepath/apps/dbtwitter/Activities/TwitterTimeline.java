@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.codepath.apps.dbtwitter.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,17 +32,35 @@ public class TwitterTimeline extends AppCompatActivity {
     public void populateTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
 
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(context, responseString, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Toast.makeText(context, responseString, Toast.LENGTH_LONG).show();
+            }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_LONG).show();
             }
-
         });
     }
 
