@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="@dimen/standard_margin">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvTweet"
+        >
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:padding="@dimen/small_margin">
+            <ImageView
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ivTweetProfilePic"
+                android:src="@drawable/db"
+                android:scaleType="fitXY" />
+
+            <!-- Top Details -->
+            <com.codepath.apps.dbtwitter.Views.TwitterFontTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/ivTweetProfilePic"
+                android:id="@+id/tvUserRealName"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:text="Dan Buscaglia"
+                android:textStyle="bold" />
+            <com.codepath.apps.dbtwitter.Views.TwitterFontTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:id="@+id/tvTwitterHandle"
+                android:layout_toRightOf="@+id/tvUserRealName"
+                android:textSize="12sp"
+                android:text="essential folsom" />
+            <com.codepath.apps.dbtwitter.Views.TwitterFontTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvPostTime"
+                android:textSize="12sp"
+                android:padding="@dimen/tiny_margin"
+                android:text="1h"
+                android:layout_alignParentRight="true" />
+            <!-- Tweet Body Details -->
+            <com.codepath.apps.dbtwitter.Views.TwitterFontTextView
+                android:layout_toRightOf="@+id/ivTweetProfilePic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvTweetBody"
+                android:textSize="12sp"
+                android:text="@string/tweetBodyPlaceholder"
+                android:layout_below="@+id/tvUserRealName"
+                android:layout_alignParentRight="true"
+                />
+            <!-- Bottom Details -->
+            <ImageView
+                android:layout_marginTop="6dp"
+                android:layout_width="@dimen/twitter_button_icon_height"
+                android:layout_height="@dimen/twitter_button_icon_width"
+                android:layout_below="@id/tvTweetBody"
+                android:layout_marginLeft="10dp"
+                android:layout_alignLeft="@id/tvTweetBody"
+                android:layout_toRightOf="@+id/ivTweetProfilePic"
+                android:id="@+id/ivReplyButton"
+                android:src="@drawable/replyicon"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_marginTop="6dp"
+                android:layout_width="@dimen/twitter_button_icon_height"
+                android:layout_height="@dimen/twitter_button_icon_width"
+                android:id="@+id/ivRetweetButton"
+                android:src="@drawable/retweeticon"
+                android:layout_below="@id/tvTweetBody"
+                android:layout_marginLeft="25dp"
+                android:layout_toRightOf="@+id/ivReplyButton"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_marginTop="6dp"
+                android:layout_width="@dimen/twitter_button_icon_height"
+                android:layout_height="@dimen/twitter_button_icon_width"
+                android:id="@+id/ivStarButton"
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/star_unstarredicon"
+                android:layout_toRightOf="@+id/ivRetweetButton"
+                android:layout_below="@id/tvTweetBody"
+                android:scaleType="fitXY" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
