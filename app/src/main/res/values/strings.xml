@@ -9,7 +9,10 @@
 
     <string name="tweetHandlePlaceholder">\@essentialfolsom</string>
     <string name="tweetBodyPlaceholder">This is a very long tweet about some thangs and doin thangs</string>
-    <string name="title_activity_twitter_timeline">TwitterTimeline</string>
+    <string name="title_activity_twitter_timeline"></string>
 
     <string name="hello_world">Hello world!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

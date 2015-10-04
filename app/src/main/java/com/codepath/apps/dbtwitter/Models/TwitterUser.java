@@ -37,10 +37,9 @@ public class TwitterUser {
             u.realname = o.getString("name");
             u.handle = o.getString("screen_name");
             u.profilePictureUrl = o.getString("profile_image_url");
-            return u;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return u;
     }
 }

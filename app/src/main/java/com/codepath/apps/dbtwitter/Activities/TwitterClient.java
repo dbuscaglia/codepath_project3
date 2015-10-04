@@ -1,15 +1,20 @@
 package com.codepath.apps.dbtwitter.Activities;
 
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.scribe.builder.api.Api;
-import org.scribe.builder.api.FlickrApi;
 import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
+import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
+import com.codepath.apps.dbtwitter.Models.Tweet;
 import com.codepath.oauth.OAuthBaseClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+
+import java.util.ArrayList;
 
 /*
  * 
@@ -34,13 +39,46 @@ public class TwitterClient extends OAuthBaseClient {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 
-    public void getHomeTimeline(AsyncHttpResponseHandler handler) {
+    public void getHomeTimeline(long max_id, final TwitterApiReceiver receiver) {
         String apiUrl = getApiUrl("statuses/home_timeline.json");
         // add params
         RequestParams params = new RequestParams();
         params.put("since_id", 1);
         params.put("count", 25);
-        getClient().get(apiUrl, params, handler);
+        if (max_id != -1) {
+            params.put("max_id", max_id);
+        }
+        getClient().get(apiUrl, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                ArrayList<Tweet> newTweets = Tweet.fromJSONArray(response);
+                receiver.handleGetTweets(newTweets);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                receiver.handleDataError(throwable, errorResponse);
+            }
+        });
+    }
+
+    public void postStatusUpdate(String tweet, RequestParams params, final TwitterApiReceiver receiver) {
+        params.put("status", tweet);
+
+        String tweetUrl = getApiUrl("statuses/update.json");
+        getClient().post(tweetUrl, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                receiver.handlePostTweet(Tweet.makeTweet(response));
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                receiver.handleDataError(throwable, errorResponse);
+            }
+        });
     }
 
     //  COMPOSE

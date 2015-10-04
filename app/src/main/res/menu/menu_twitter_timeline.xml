@@ -1,7 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.codepath.apps.dbtwitter.Activities.TwitterTimeline">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    tools:context=".MainActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="0"
+        android:title="@string/action_settings"
+        app:showAsAction="never"
+        android:visible="false"/>
+    <item
+        android:id="@+id/action_compose"
+        android:orderInCategory="300"
+        android:title="Search"
+        android:icon="@drawable/composeicon"
+        app:showAsAction="ifRoom"
+        android:onClick="composeTweet"
+        ></item>
+    <item
+        android:id="@+id/action_user"
+        android:orderInCategory="150"
+        android:title="User"
+        android:icon="@drawable/transparentlogo"
+        app:showAsAction="ifRoom"></item>
+
 </menu>

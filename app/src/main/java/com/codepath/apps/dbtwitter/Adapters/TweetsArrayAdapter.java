@@ -1,12 +1,25 @@
 package com.codepath.apps.dbtwitter.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Html;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.codepath.apps.dbtwitter.Models.Tweet;
 import com.codepath.apps.dbtwitter.R;
+import com.codepath.apps.dbtwitter.Views.TwitterFontTextView;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -15,6 +28,57 @@ import java.util.List;
 public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
-        super(context, android.R.layout.simple_list_item_1, tweets);
+        super(context, R.layout.layout_tweet_card, tweets);
+    }
+
+    private static class ViewHolder {
+        TextView body;
+        TextView realName;
+        TextView handle;
+        TextView postTime;
+
+        ImageView profilePic;
+
+
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Get the data item for this position
+        Tweet so = getItem(position);
+        // Check if an existing view is being reused, otherwise inflate the view
+        ViewHolder viewHolder; // view lookup cache stored in tag
+        if (convertView == null) {
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.layout_tweet_card, parent, false);
+            viewHolder.profilePic = (ImageView) convertView.findViewById(R.id.ivTweetProfilePic);
+            viewHolder.body = (TextView) convertView.findViewById(R.id.tvTweetBody);
+            viewHolder.realName = (TextView) convertView.findViewById(R.id.tvUserRealName);
+            viewHolder.handle = (TextView) convertView.findViewById(R.id.tvTwitterHandle);
+            viewHolder.postTime = (TextView) convertView.findViewById(R.id.tvPostTime);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        viewHolder.profilePic.setImageResource(0);
+        // Lookup view for data population
+
+        Transformation transformation = new RoundedTransformationBuilder()
+                .borderColor(Color.BLACK)
+                .borderWidthDp(0)
+                .cornerRadiusDp(30)
+                .oval(false)
+                .build();
+        Picasso.with(getContext())
+                .load(so.getUser().getProfilePictureUrl())
+                .fit()
+                .transform(transformation)
+                .into(viewHolder.profilePic);
+        viewHolder.body.setText(so.getTweetBody());
+        viewHolder.handle.setText(so.getUser().getHandle());
+        viewHolder.realName.setText(so.getUser().getRealname());
+        viewHolder.postTime.setText(so.getTimestamp());
+        return convertView;
     }
 }

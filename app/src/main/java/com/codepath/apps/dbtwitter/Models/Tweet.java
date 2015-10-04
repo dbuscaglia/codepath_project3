@@ -1,10 +1,14 @@
 package com.codepath.apps.dbtwitter.Models;
 
+import android.text.format.DateUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by danbuscaglia on 10/4/15.
@@ -19,7 +23,9 @@ public class Tweet {
     private int stars;
     private int retweets;
 
-
+    public long getTweetId() {
+        return tweetId;
+    }
 
     public static Tweet makeTweet(JSONObject o) {
         // body, uniqueid, createdAt
@@ -27,12 +33,28 @@ public class Tweet {
         try {
             t.tweetBody= o.getString("text");
             t.tweetId= o.getLong("id");
-            t.timestamp = o.getString("created_at");
+            t.timestamp = getRelativeTimeAgo(o.getString("created_at"));
             t.user = TwitterUser.makeUser(o.getJSONObject("user"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return t;
+    }
+    public static String getRelativeTimeAgo(String rawJsonDate) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+        String relativeDate = "";
+        try {
+            long dateMillis = sf.parse(rawJsonDate).getTime();
+            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return relativeDate;
     }
 
     public static ArrayList<Tweet> fromJSONArray(JSONArray a) {
