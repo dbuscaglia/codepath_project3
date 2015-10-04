@@ -3,11 +3,14 @@ package com.codepath.apps.dbtwitter.Activities;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.codepath.apps.dbtwitter.Adapters.TweetsArrayAdapter;
+import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
+import com.codepath.apps.dbtwitter.Models.Tweet;
 import com.codepath.apps.dbtwitter.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -15,16 +18,25 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class TwitterTimeline extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class TwitterTimeline extends AppCompatActivity implements TwitterApiReceiver {
 
     private TwitterClient client;
     private Context context;
+    private ArrayList<Tweet> homeTweets;
+    private TweetsArrayAdapter adapter;
+    private ListView lvTweets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_twitter_timeline);
         client = TwitterApplication.getRestClient();
+        lvTweets = (ListView) findViewById(R.id.rvTwitterStream);
+        homeTweets = new ArrayList<Tweet>();
+        adapter = new TweetsArrayAdapter(this, homeTweets);
+        lvTweets.setAdapter(adapter);
         context = this;
         populateTimeline();
     }
@@ -33,28 +45,8 @@ public class TwitterTimeline extends AppCompatActivity {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, responseString, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Toast.makeText(context, responseString, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show();
+                adapter.addAll(Tweet.fromJSONArray(response));
             }
 
             @Override
@@ -84,5 +76,15 @@ public class TwitterTimeline extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void handleDataCallback(ArrayList<Tweet> resultPage) {
+
+    }
+
+    @Override
+    public void handleDataError(Throwable e) {
+
     }
 }
