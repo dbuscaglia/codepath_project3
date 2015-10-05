@@ -1,12 +1,16 @@
 package com.codepath.apps.dbtwitter.Activities;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -19,6 +23,7 @@ import com.codepath.apps.dbtwitter.Adapters.TweetsArrayAdapter;
 import com.codepath.apps.dbtwitter.Helpers.EndlessScrollListener;
 import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
 import com.codepath.apps.dbtwitter.Models.Tweet;
+import com.codepath.apps.dbtwitter.Models.TwitterTweetApiResponseList;
 import com.codepath.apps.dbtwitter.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -38,6 +43,7 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
     private ListView lvTweets;
     private long oldestTweetInMemory;  // used for infinite scrolling
     private Toolbar toolbar;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,7 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
         setContentView(R.layout.activity_twitter_timeline);
         toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);
+        addImageToMenuBar();
         oldestTweetInMemory = -1;
         client = TwitterApplication.getRestClient();
         lvTweets = (ListView) findViewById(R.id.rvTwitterStream);
@@ -62,21 +69,45 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
             }
         });
         context = this;
+        this.swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        this.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTimeline();
+            }
+        });
+
+        // Configure the refreshing colors
+        this.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         populateTimeline();
     }
 
+    public void addImageToMenuBar()
+    {
+        // no op for now
+    }
+
     public void populateTimeline() {
-        client.getHomeTimeline(oldestTweetInMemory, this);
+        client.getHomeTimeline(oldestTweetInMemory, this, false);
+    }
+
+    public void refreshTimeline() {
+        client.getHomeTimeline(-1, this, true);
+    }
+
+    public void clearTweets() {
+        adapter.clear();
+        this.swipeContainer.setRefreshing(false);
     }
 
     public void addTweets(ArrayList<Tweet> tweets) {
-        for (int i =0; i < tweets.size(); i++) {
-            long id = tweets.get(i).getTweetId();
-            if (id < oldestTweetInMemory) {
-                oldestTweetInMemory = id;
-            }
-        }
+        oldestTweetInMemory = tweets.get(tweets.size() - 1).getTweetId();
         adapter.addAll(tweets);
+        this.swipeContainer.setRefreshing(false);
     }
 
     public void composeTweet(MenuItem mi) {
@@ -104,7 +135,11 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
     }
 
     @Override
-    public void handleGetTweets(ArrayList<Tweet> resultPage) {
+    public void handleGetTweets(TwitterTweetApiResponseList response) {
+        ArrayList<Tweet> resultPage = response.getTweets();
+        if (response.isShouldRefresh()) {
+            clearTweets();
+        }
         addTweets(resultPage);
     }
 
@@ -118,6 +153,7 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
     public void handleDataError(Throwable e, JSONObject response) {
         e.printStackTrace();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

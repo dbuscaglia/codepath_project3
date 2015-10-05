@@ -2,6 +2,9 @@ package com.codepath.apps.dbtwitter.Models;
 
 import android.text.format.DateUtils;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Table;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +16,8 @@ import java.util.Locale;
 /**
  * Created by danbuscaglia on 10/4/15.
  */
-public class Tweet {
+@Table(name = "Tweets")
+public class Tweet extends Model {
 
     private long tweetId;
 

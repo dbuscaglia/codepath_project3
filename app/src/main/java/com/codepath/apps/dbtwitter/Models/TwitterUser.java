@@ -18,7 +18,7 @@ public class TwitterUser {
     }
 
     public String getHandle() {
-        return handle;
+        return "@" + handle;
     }
 
     public String getProfilePictureUrl() {

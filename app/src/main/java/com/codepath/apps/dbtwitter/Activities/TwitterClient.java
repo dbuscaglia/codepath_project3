@@ -10,6 +10,7 @@ import android.content.Context;
 
 import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
 import com.codepath.apps.dbtwitter.Models.Tweet;
+import com.codepath.apps.dbtwitter.Models.TwitterTweetApiResponseList;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -39,11 +40,11 @@ public class TwitterClient extends OAuthBaseClient {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 
-    public void getHomeTimeline(long max_id, final TwitterApiReceiver receiver) {
+    public void getHomeTimeline(long max_id, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
         String apiUrl = getApiUrl("statuses/home_timeline.json");
         // add params
         RequestParams params = new RequestParams();
-        params.put("since_id", 1);
+
         params.put("count", 25);
         if (max_id != -1) {
             params.put("max_id", max_id);
@@ -51,9 +52,10 @@ public class TwitterClient extends OAuthBaseClient {
         getClient().get(apiUrl, params, new JsonHttpResponseHandler() {
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                ArrayList<Tweet> newTweets = Tweet.fromJSONArray(response);
-                receiver.handleGetTweets(newTweets);
+            public void onSuccess(int statusCode, Header[] headers, JSONArray tweets) {
+                ArrayList<Tweet> newTweets = Tweet.fromJSONArray(tweets);
+                TwitterTweetApiResponseList response = new TwitterTweetApiResponseList(newTweets, shouldRefresh);
+                receiver.handleGetTweets(response);
             }
 
             @Override

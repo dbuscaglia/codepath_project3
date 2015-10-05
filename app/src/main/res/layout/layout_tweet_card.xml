@@ -34,7 +34,8 @@
                 android:layout_alignParentTop="true"
                 android:id="@+id/tvTwitterHandle"
                 android:layout_toRightOf="@+id/tvUserRealName"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="2dp"
                 android:textSize="12sp"
                 android:text="essential folsom" />
             <TextView
