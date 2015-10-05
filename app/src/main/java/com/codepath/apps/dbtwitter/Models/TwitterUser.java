@@ -11,6 +11,12 @@ public class TwitterUser {
     private String realname;
     private String handle;
     private String profilePictureUrl;
+    private int favourites;
+
+    public int getFavourites() {
+        return favourites;
+    }
+
     private long userId;
 
     public String getRealname() {
@@ -37,6 +43,7 @@ public class TwitterUser {
             u.realname = o.getString("name");
             u.handle = o.getString("screen_name");
             u.profilePictureUrl = o.getString("profile_image_url");
+            u.favourites = o.getInt("favourites_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }

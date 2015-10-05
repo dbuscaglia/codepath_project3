@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -14,7 +15,7 @@ import com.codepath.apps.dbtwitter.Helpers.ConnectionHelper;
 import com.codepath.apps.dbtwitter.R;
 
 
-public class NetworkDetectingActivity extends AppCompatActivity {
+public class NetworkDetectingActivity extends ActionBarActivity {
 
     private static final String TAG = "BaseActivity";
 

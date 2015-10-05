@@ -3,6 +3,7 @@ package com.codepath.apps.dbtwitter.Models;
 import android.text.format.DateUtils;
 
 import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 import org.json.JSONArray;
@@ -18,13 +19,15 @@ import java.util.Locale;
  */
 @Table(name = "Tweets")
 public class Tweet extends Model {
-
+    @Column(name = "uid", index = true)
     private long tweetId;
-
+    @Column(name = "tweetBody")
     private String tweetBody;
+    @Column(name = "user")
     private TwitterUser user;
+    @Column(name = "timetsamp")
     private String timestamp;
-    private int stars;
+
     private int retweets;
 
     public long getTweetId() {
@@ -39,6 +42,7 @@ public class Tweet extends Model {
             t.tweetId= o.getLong("id");
             t.timestamp = getRelativeTimeAgo(o.getString("created_at"));
             t.user = TwitterUser.makeUser(o.getJSONObject("user"));
+            t.retweets = o.getInt("retweet_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -82,20 +86,12 @@ public class Tweet extends Model {
         return tweetBody;
     }
 
-    public void setTweetBody(String tweetBody) {
-        this.tweetBody = tweetBody;
-    }
-
     public TwitterUser getUser() {
         return user;
     }
 
     public String getTimestamp() {
         return timestamp;
-    }
-
-    public int getStars() {
-        return stars;
     }
 
     public int getRetweets() {

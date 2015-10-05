@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codepath.apps.dbtwitter.Adapters.TweetsArrayAdapter;
+import com.codepath.apps.dbtwitter.Helpers.ConnectionHelper;
 import com.codepath.apps.dbtwitter.Helpers.EndlessScrollListener;
 import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
 import com.codepath.apps.dbtwitter.Models.Tweet;
@@ -34,7 +35,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class TwitterTimeline extends ActionBarActivity implements TwitterApiReceiver {
+public class TwitterTimeline extends NetworkDetectingActivity implements TwitterApiReceiver {
 
     private TwitterClient client;
     private Context context;
@@ -63,6 +64,7 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
             public boolean onLoadMore(int page, int totalItemsCount) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to your AdapterView
+
                 populateTimeline();
                 // or customLoadMoreDataFromApi(totalItemsCount);
                 return true; // ONLY if more data is actually being loaded; false otherwise.
@@ -92,11 +94,20 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
     }
 
     public void populateTimeline() {
-        client.getHomeTimeline(oldestTweetInMemory, this, false);
+        if (ConnectionHelper.isConnected(this)) {
+            client.getHomeTimeline(oldestTweetInMemory, this, false);
+        } else {
+            this.swipeContainer.setRefreshing(false);
+        }
+
     }
 
     public void refreshTimeline() {
-        client.getHomeTimeline(-1, this, true);
+        if (ConnectionHelper.isConnected(this)) {
+            client.getHomeTimeline(-1, this, true);
+        } else {
+            this.swipeContainer.setRefreshing(false);
+        }
     }
 
     public void clearTweets() {
@@ -121,8 +132,12 @@ public class TwitterTimeline extends ActionBarActivity implements TwitterApiRece
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         // save settings
-                        TextView tweetBody = (TextView) dialog.getCustomView().findViewById(R.id.etTweetBody);
-                        client.postStatusUpdate(tweetBody.getText().toString(), new RequestParams(), (TwitterApiReceiver) context);
+                        if (ConnectionHelper.isConnected(context)) {
+                            TextView tweetBody = (TextView) dialog.getCustomView().findViewById(R.id.etTweetBody);
+                            client.postStatusUpdate(tweetBody.getText().toString(), new RequestParams(), (TwitterApiReceiver) context);
+                        } else {
+                            Toast.makeText(context, "You can not compose offline", Toast.LENGTH_LONG);
+                        }
                     }
 
                     @Override

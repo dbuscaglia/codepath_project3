@@ -42,7 +42,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         TextView realName;
         TextView handle;
         TextView postTime;
-
+        TextView stars;
+        TextView retweets;
         ImageView profilePic;
 
 
@@ -63,6 +64,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder.realName = (TextView) convertView.findViewById(R.id.tvUserRealName);
             viewHolder.handle = (TextView) convertView.findViewById(R.id.tvTwitterHandle);
             viewHolder.postTime = (TextView) convertView.findViewById(R.id.tvPostTime);
+            viewHolder.stars = (TextView) convertView.findViewById(R.id.tvTotalStars);
+            viewHolder.retweets = (TextView) convertView.findViewById(R.id.tvTotalRetweets);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -90,6 +93,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         viewHolder.handle.setText(so.getUser().getHandle());
         viewHolder.realName.setText(so.getUser().getRealname());
         viewHolder.postTime.setText(so.getTimestamp());
+        viewHolder.stars.setText(String.valueOf(so.getUser().getFavourites()));
+        viewHolder.retweets.setText(String.valueOf(so.getRetweets()));
         return convertView;
     }
 
