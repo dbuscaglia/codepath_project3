@@ -50,7 +50,7 @@ The following **extra** features are also implemented:
 
 ## Video Walkthrough
 
-[Imgur](http://i.imgur.com/wNPtPKA.gifv)
+[Imgur](http://i.imgur.com/YMCYEhW.gifv)
 
 ## Open-source libraries used
 
