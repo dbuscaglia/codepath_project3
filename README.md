@@ -38,7 +38,7 @@ The following **extra** features are also implemented:
 
 ## Video Walkthrough
 
-[Imgur](http://imgur.com/yBiSLE7)
+[Imgur](http://i.imgur.com/wNPtPKA.gifv)
 
 ## Open-source libraries used
 
