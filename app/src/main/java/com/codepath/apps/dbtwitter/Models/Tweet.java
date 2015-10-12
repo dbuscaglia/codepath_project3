@@ -27,12 +27,11 @@ public class Tweet extends Model {
     private TwitterUser user;
     @Column(name = "timetsamp")
     private String timestamp;
-
+    @Column(name="favorites")
+    private int favorites;
+    @Column(name="retweets")
     private int retweets;
 
-    public long getTweetId() {
-        return tweetId;
-    }
 
     public static Tweet makeTweet(JSONObject o) {
         // body, uniqueid, createdAt
@@ -43,11 +42,20 @@ public class Tweet extends Model {
             t.timestamp = getRelativeTimeAgo(o.getString("created_at"));
             t.user = TwitterUser.makeUser(o.getJSONObject("user"));
             t.retweets = o.getInt("retweet_count");
+            t.favorites = o.getInt("favorite_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return t;
     }
+
+    public long getTweetId() {
+        return tweetId;
+    }
+    public int getFavorites() {
+        return favorites;
+    }
+
     public static String getRelativeTimeAgo(String rawJsonDate) {
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);

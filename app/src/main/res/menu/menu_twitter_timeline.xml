@@ -9,12 +9,21 @@
         app:showAsAction="never"
         android:visible="false"/>
     <item
+        android:id="@+id/action_profile"
+        android:orderInCategory="200"
+        android:title="profile"
+        android:icon="@drawable/accountoutline"
+        app:showAsAction="ifRoom"
+        android:onClick="showProfile"
+        >
+
+    </item>
+    <item
         android:id="@+id/action_compose"
         android:orderInCategory="300"
-        android:title="Search"
+        android:title="compose"
         android:icon="@drawable/composeicon"
         app:showAsAction="ifRoom"
-        android:onClick="composeTweet"
         >
 
     </item>

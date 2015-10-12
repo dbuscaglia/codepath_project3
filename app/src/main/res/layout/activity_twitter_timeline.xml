@@ -5,27 +5,38 @@
 
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/layout_actionbar"
-        ></include>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipeContainer"
-        android:layout_below="@+id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <ListView
-        android:layout_below="@+id/swipeContainer"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rvTwitterStream"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:orientation="vertical"
+        android:id="@+id/top_bar"
+        >
+        <include
+            android:id="@+id/tool_bar"
+            layout="@layout/layout_actionbar"
+            ></include>
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        app:pstsShouldExpand="true"
+        app:pstsTextAllCaps="true"
+        app:pstsTabPaddingLeftRight="14dp"
+        app:pstsDividerColor="@android:color/white"
+        app:pstsIndicatorColor="@color/twitter_main_blue"
+        app:pstsUnderlineColor="@color/twitter_dark_blue"
+        android:layout_height="48dp" />
+
+    <com.codepath.apps.dbtwitter.Views.LockableViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:background="@android:color/white" />
+    </LinearLayout>
+
+
 
 </RelativeLayout>
 

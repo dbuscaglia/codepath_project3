@@ -48,9 +48,20 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
 
     }
+    public interface OnTweetClickedListener {
+        void onTweetClicked(int position);
+        void onProfileClicked(int position);
+        void onRetweetClicked(int position);
+    }
+
+    private OnTweetClickedListener onTweetClickedListener;
+
+    public void setOnTweetClickedListener(OnTweetClickedListener onTweetClickedListener) {
+        this.onTweetClickedListener = onTweetClickedListener;
+    }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
         Tweet so = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
@@ -70,6 +81,33 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
+        viewHolder.profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTweetClickedListener != null) {
+                    onTweetClickedListener.onProfileClicked(position);
+                }
+            }
+        });
+
+        viewHolder.body.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTweetClickedListener != null) {
+                    onTweetClickedListener.onTweetClicked(position);
+                }
+            }
+        });
+
+        viewHolder.stars.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onTweetClickedListener != null) {
+                    onTweetClickedListener.onRetweetClicked(position);
+                }
+            }
+        });
         viewHolder.profilePic.setImageResource(0);
         // Lookup view for data population
 
@@ -93,7 +131,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         viewHolder.handle.setText(so.getUser().getHandle());
         viewHolder.realName.setText(so.getUser().getRealname());
         viewHolder.postTime.setText(so.getTimestamp());
-        viewHolder.stars.setText(String.valueOf(so.getUser().getFavourites()));
+        viewHolder.stars.setText(String.valueOf(so.getFavorites()));
         viewHolder.retweets.setText(String.valueOf(so.getRetweets()));
         return convertView;
     }

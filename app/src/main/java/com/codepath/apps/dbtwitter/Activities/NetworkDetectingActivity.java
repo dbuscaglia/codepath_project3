@@ -15,7 +15,7 @@ import com.codepath.apps.dbtwitter.Helpers.ConnectionHelper;
 import com.codepath.apps.dbtwitter.R;
 
 
-public class NetworkDetectingActivity extends ActionBarActivity {
+public class NetworkDetectingActivity extends ActionBarActivity{
 
     private static final String TAG = "BaseActivity";
 

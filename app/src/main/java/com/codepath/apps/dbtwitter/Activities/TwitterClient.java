@@ -7,10 +7,12 @@ import org.scribe.builder.api.Api;
 import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.codepath.apps.dbtwitter.Interfaces.TwitterApiReceiver;
 import com.codepath.apps.dbtwitter.Models.Tweet;
 import com.codepath.apps.dbtwitter.Models.TwitterTweetApiResponseList;
+import com.codepath.apps.dbtwitter.Models.TwitterUser;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -35,6 +37,7 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_KEY = "YMPQvFpAOWSGxy3PY6XRvdz9Y";       // Change this
 	public static final String REST_CONSUMER_SECRET = "6I1eMmYtYnnetE3QRnCkfy0R8bbhG4dAOkWEIFMLWCNqusJRr6"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://cpdbtweets"; // Change this (here and in manifest)
+    public static final int PAGE_SIZE = 25;
 
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
@@ -42,14 +45,135 @@ public class TwitterClient extends OAuthBaseClient {
 
     public void getHomeTimeline(long max_id, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
         String apiUrl = getApiUrl("statuses/home_timeline.json");
-        // add params
-        RequestParams params = new RequestParams();
+        getRequestTweets(apiUrl, buildParams(max_id, -1), receiver, shouldRefresh);
+    }
 
-        params.put("count", 25);
+    public void getMentionsTimeline(long max_id, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        getRequestTweets(apiUrl, buildParams(max_id, -1), receiver, shouldRefresh);
+    }
+
+    public void getUserTimeline(long max_id, TwitterUser user, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        getRequestTweets(apiUrl, buildParams(max_id, getUserIdFromUser(user)), receiver, shouldRefresh);
+    }
+
+    private long getUserIdFromUser(TwitterUser u) {
+        long user_id;
+        if (u == null) {
+            user_id = -1;
+        } else {
+            user_id = u.getUserId();
+        }
+        return user_id;
+    }
+
+    public void getUserDetail(TwitterUser user, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
+        String apiUrl = getApiUrl("users/lookup.json");
+        RequestParams params = new RequestParams();
+        long user_id = getUserIdFromUser(user);
+        if (user_id != -1) {
+            params.put("user_id", user_id);
+        }
+        getRequestUsers(apiUrl, params, receiver, shouldRefresh);
+    }
+
+    public void getLoggedInUserDetail(final TwitterApiReceiver receiver) {
+        String apiUrl = getApiUrl("account/verify_credentials.json");
+        getLoggedInUser(apiUrl, null, receiver, false);
+    }
+
+    public void getUsersDetail(ArrayList<TwitterUser> users, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
+        /**
+         * to get a lot of user data in the background for persistence
+         */
+        String apiUrl = getApiUrl("users/lookup.json");
+        String user_ids = "";
+        for (int i = 0; i < users.size(); i++) {
+            if (i == 0) {
+                user_ids = user_ids + String.valueOf(users.get(i).getUserId());
+            } else {
+                user_ids = user_ids + ", " +  String.valueOf(users.get(i).getUserId());
+            }
+        }
+        RequestParams params = new RequestParams();
+        params.put("user_id", user_ids);
+        postRequest(apiUrl, params, receiver, shouldRefresh);
+    }
+
+    private RequestParams buildParams(long max_id, long uid) {
+        RequestParams params = new RequestParams();
+        params.put("count", TwitterClient.PAGE_SIZE);
         if (max_id != -1) {
             params.put("max_id", max_id);
         }
+        if (uid != -1) {
+            params.put("user_id", uid);
+        }
+        return params;
+    }
+
+    public void getRequestTweets(String apiUrl, RequestParams params, final TwitterApiReceiver receiver, final boolean shouldRefresh){
+
         getClient().get(apiUrl, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray tweets) {
+                ArrayList<Tweet> newTweets = Tweet.fromJSONArray(tweets);
+                TwitterTweetApiResponseList response = new TwitterTweetApiResponseList(newTweets, shouldRefresh);
+                receiver.handleGetTweets(response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                throw new RuntimeException("DEAD");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                receiver.handleDataError(throwable, errorResponse);
+            }
+        });
+    }
+
+    public void getLoggedInUser(String apiUrl, RequestParams params, final TwitterApiReceiver receiver, final boolean shouldRefresh) {
+        getClient().get(apiUrl, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject usersResponse) {
+                TwitterUser twitter_user = TwitterUser.makeUser(usersResponse);
+                Log.d("DANB", twitter_user.toString());
+                receiver.handleGetOwner(twitter_user);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DANB", errorResponse.toString());
+                receiver.handleDataError(throwable, errorResponse);
+            }
+        });
+
+    }
+
+    public void getRequestUsers(String apiUrl, RequestParams params, final TwitterApiReceiver receiver, final boolean shouldRefresh){
+        getClient().get(apiUrl, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray usersResponse) {
+                ArrayList<TwitterUser> users = TwitterUser.fromJSONArray(usersResponse);
+                receiver.handleGetUser(users);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                receiver.handleDataError(throwable, errorResponse);
+            }
+        });
+    }
+
+
+    public void postRequest(String apiUrl, RequestParams params, final TwitterApiReceiver receiver, final boolean shouldRefresh){
+        getClient().post(apiUrl, params, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray tweets) {
