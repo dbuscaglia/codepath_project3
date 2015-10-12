@@ -1,13 +1,25 @@
-# Project 3 - Simple Twitter Client
+# Project 4 - Simple Twitter Client Continued
 
-Build a simple Twitter client that supports viewing a Twitter timeline and composing a new tweet.
+Extend the simple Twitter client that supports fragments
 
-Time spent: ~10 hours spent in total.
+Time spent: ~12 hours spent in total.
 
 ## User Stories
 
 The following **required** functionality is completed:
+Week 4
+* [x] Includes all required user stories from Week 3 Twitter Client
+* [x] User can switch between Timeline and Mention views using tabs.
+* [x] User can view their home timeline tweets.
+* [x] User can view the recent mentions of their username.
+* [x] User can navigate to view their own profile
+* [x] User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+* [x] User can click on the profile image in any tweet to see another user's profile.
+* [x] User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+* [x] Profile view should include that user's timeline
+* [x] User can infinitely paginate any of these timelines (home, mentions, user) by scrolling to the bottom
 
+Week 3
 * [x] User can sign in to Twitter using OAuth login
 * [x] User can view the tweets from their home timeline
 * [x] User should be displayed the username, name, and body for each tweet
